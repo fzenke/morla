@@ -1,0 +1,61 @@
+{% extends 'papers/base.html' %}
+
+{% block title %}Morla {{ title }} {% endblock %}
+
+{% block content %}
+
+{% if title %}
+	<h1>{{title}}</h1>
+{% endif %}
+
+{% if articles_list %}
+    <table>
+    {% for article in articles_list %}
+		<tr> 
+			<td>
+			<strong>{{ article.title }}</strong> <br />
+			{{ article.authors }} <br />
+
+			{% if user.is_authenticated %}
+				<button id="star_button{{article.id}}" name="btnSubmitStar" data-artid="{{article.id}}" class="btn btn-primary btn-xs" type="button">
+				{% if article.starred.all %}
+					<div id="star{{article.id}}"><span class="glyphicon glyphicon-star"></span></div>
+				{% else %}
+					<div id="star{{article.id}}"><span class="glyphicon glyphicon-star-empty"></span></div>
+				{% endif %}
+				</button> | 
+
+				<button id="plus_button{{article.id}}" name="btnSubmitPlus" data-artid="{{article.id}}" class="btn btn-primary btn-xs" type="button">
+				<span class="glyphicon glyphicon-thumbs-up"></span></button>
+
+				<button id="zero_button{{article.id}}" name="btnSubmitZero" data-artid="{{article.id}}" class="btn btn-primary btn-xs" type="button">
+				0</button>
+
+				<button id="minus_button{{article.id}}" name="btnSubmitMinus" data-artid="{{article.id}}" class="btn btn-primary btn-xs" type="button">
+				<span class="glyphicon glyphicon-thumbs-down"></span></button>
+
+				<strong id="label{{article.id}}">&nbsp;</strong> |
+			{% endif %}
+
+			<small> 
+			<a href="/papers/{{ article.id }}/">details</a> | 
+			<a href="{{ article.url }}">full text</a> |
+			{{ article.journal }} | {{ article.pubdate }}
+			</small> 
+			</td> 
+		</tr>
+
+
+
+		<tr  height="20px"> <td> </td> </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No elements in this list.</p>
+{% endif %}
+
+
+{% block pagination %}{% endblock %}
+
+
+{% endblock %}

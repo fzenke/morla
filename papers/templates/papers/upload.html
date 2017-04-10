@@ -1,0 +1,14 @@
+{% extends 'papers/base.html' %}
+
+{% block title %}File upload{% endblock %}
+
+{% block content %}
+
+<form enctype="multipart/form-data" method="post" action="upload">
+    {% csrf_token %}
+	<input type="hidden" name="MAX_FILE_SIZE" value="1048576" /> 
+	<input type="file" name="file">
+	<input type="submit" value="Submit" id="Save"/>
+</form>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'papers/base.html' %}
+
+{% block title %}Details for "{{ article.title }}" {% endblock %}
+
+{% block content %}
+
+<h3>{{ article.title }}</h3> 
+<h4>{{ article.authors }}</h4> 
+
+<p>
+{% if article.journal %}
+{{ article.journal }} 
+{% endif %}
+
+({{ article.pubdate }}) <br />
+</p>
+
+<p> <a href="{{ article.url }}">full text</a> 
+{% if article.doi %}
+| doi: <a href="https://doi.org/{{ article.doi }}">{{ article.doi }}</a>
+{% endif %}
+</p>
+
+{% if article.keywords %}
+<p>
+<strong>Keywords:</strong> {{ article.keywords }}
+</p>
+{% endif %}
+
+<p><strong>Abstract:</strong> {{ article.abstract }}</p>
+
+
+{% if in_training_set %}
+<p>
+This article is currently in your training data as <strong>{{in_training_set}}</strong>.
+</p>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+<p>
+	<button id="star_button{{article.id}}" name="btnSubmitStar" data-artid="{{article.id}}" class="btn btn-primary btn-sm" type="button">
+	{% if article.starred.all %}
+		<div id="star{{article.id}}"><span class="glyphicon glyphicon-star"></span></div>
+	{% else %}
+		<div id="star{{article.id}}"><span class="glyphicon glyphicon-star-empty"></span></div>
+	{% endif %}
+	</button> | 
+
+	<button id="plus_button{{article.id}}" name="btnSubmitPlus" data-artid="{{article.id}}" class="btn btn-primary btn-sm" type="button">
+	<span class="glyphicon glyphicon-thumbs-up"></span></button>
+
+	<button id="zero_button{{article.id}}" name="btnSubmitZero" data-artid="{{article.id}}" class="btn btn-primary btn-sm" type="button">
+	0</button>
+
+	<button id="minus_button{{article.id}}" name="btnSubmitMinus" data-artid="{{article.id}}" class="btn btn-primary btn-sm" type="button">
+	<span class="glyphicon glyphicon-thumbs-down"></span></button>
+
+	<strong id="label{{article.id}}">&nbsp;</strong> 
+</p>
+{% endif %}
+
+
+<p>&nbsp;</p>
+
+<hr />
+
+<h3>Similar articles</h3>
+
+{% if similar_articles %}
+    <table>
+    {% for article in similar_articles %}
+		<tr> 
+			<td>
+			<strong>{{ article.title }}</strong> <br />
+			{{ article.authors }} <br />
+
+			<small> 
+			<a href="/papers/{{ article.id }}/">details</a> | 
+			<a href="{{ article.url }}">full text</a> |
+			{{ article.journal }} | {{ article.pubdate }}
+			</small>
+		</td> </tr>
+		<tr  height="10px"> <td> </td> </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No similar articles available.</p>
+{% endif %}
+
+
+{% endblock %}

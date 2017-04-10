@@ -1,0 +1,5 @@
+#!/bin/sh
+PWD=`pwd`
+export DJANGO_SETTINGS_MODULE="morla.settings"
+DJANGO_PYTHONPATH="$PWD/.."
+export PYTHONPATH=$PYTHONPATH:$DJANGO_PYTHONPATH

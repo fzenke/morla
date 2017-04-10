@@ -1,0 +1,36 @@
+{% extends 'papers/base.html' %}
+
+{% block content %}
+
+{% if title %}
+	<h1>{% title %}</h1>
+{% endif %}
+
+{% if suggested_articles_list %}
+    <ol>
+    {% for article in suggested_articles_list %}
+		<li>
+			{{ article.title }} <br />
+			{{ article.authors }} ({{ article.pubdate }}) <br /> 
+			<a href="/papers/{{ article.id }}/">details</a> <br /> 
+
+
+			{% if user.is_authenticated %}
+				<button id="plus_button{{article.id}}" name="btnSubmitPlus" data-artid="{{article.id}}" class="btn btn-primary" type="button">
+				<span class="glyphicon glyphicon-thumbs-up"></span>
+				+1</button>
+
+				<button id="minus_button{{article.id}}" name="btnSubmitMinus" data-artid="{{article.id}}" class="btn btn-primary" type="button">
+				<span class="glyphicon glyphicon-thumbs-down"></span>
+				-1</button>
+
+				<strong id="label{{article.id}}">&nbsp;</strong> 
+			{% endif %}
+		</li>
+    {% endfor %}
+    </ol>
+{% else %}
+    <p>No suggestions available.</p>
+{% endif %}
+
+{% endblock %}

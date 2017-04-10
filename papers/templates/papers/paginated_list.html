@@ -1,0 +1,21 @@
+{% extends 'papers/list.html' %}
+
+{% block pagination %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if articles_list.has_previous %}
+            <a href="?page={{ articles_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            page {{ articles_list.number }} of {{ articles_list.paginator.num_pages }}.
+        </span>
+
+        {% if articles_list.has_next %}
+            <a href="?page={{ articles_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}

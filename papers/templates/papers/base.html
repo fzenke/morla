@@ -1,0 +1,33 @@
+{% load static %}<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Default Title{% endblock %}</title>
+    {% block stylesheet %}{% endblock %}
+	<!-- Bootstrap -->
+	<link href="{% static 'papers/css/bootstrap.min.css' %}" rel="stylesheet">
+	<style>
+		.container-fluid {
+		padding-left: 16px;
+		padding-right: 16px;
+		}
+	</style>
+  </head>
+  <body>
+
+  {% include 'papers/nav.html' %}
+
+  <div class="container-fluid">
+  <div class="row">
+  <div class="col-xs-12 col-md-6">
+  {% block content %}
+  {% endblock %}
+  </div></div></div>
+
+  {% load static %}
+  <script src="{% static 'papers/js/jquery.min.js' %}"></script>
+  <script src="{% static 'papers/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'papers/js/papers-ajax.js' %}"></script>
+  {% block javascript %}{% endblock %}
+  </body>
+</html>

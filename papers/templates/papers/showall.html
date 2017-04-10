@@ -1,0 +1,12 @@
+{% if articles_list %}
+    <ul>
+    {% for article in articles_list %}
+        <li>
+			(<a href="/papers/label/{{ article.id }}/-1">-1</a>|<a href="/papers/label/{{ article.id }}/0">0</a>|<a href="/papers/label/{{ article.id }}/1">+1</a>)
+			<a href="/papers/{{ article.id }}/">{{ article.authors }} ({{ article.pubdate }}). {{ article.title }}</a>
+		</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No suggestions available.</p>
+{% endif %}
