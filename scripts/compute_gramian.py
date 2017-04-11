@@ -87,6 +87,9 @@ def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
 
     print("Saving to db...")
     data = sparse.bmat(blocks,'coo')
+    # Remove any junk above the blocksize limit
+    Similarity.objects.filter(a__gt=start_block*block_size).delete()
+    Similarity.objects.filter(b__gt=start_block*block_size).delete()
     print("sparseness=%f"%(1.0*data.nnz/np.prod(data.shape)))
     add_similarities_to_db(articles[:nb_articles], data)
 
@@ -121,16 +124,13 @@ def compute_features():
         add_features_to_db(articles, features)
 
 
-def update_gramian(block_size=1000):
+def update_gramian(block_size=400):
     # Find first article without similarities 
     start_block = 0
     if Similarity.objects.all().count():
         qres = Similarity.objects.all().aggregate(Max('a'))
         start_block = int(qres['a__max']/block_size)
         print("Resuming at article_id=%i"%qres['a__max'])
-    # Remove any junk above the blocksize limit
-    Similarity.objects.filter(a__gt=start_block*block_size).delete()
-    Similarity.objects.filter(b__gt=start_block*block_size).delete()
     # Compute the remaining blocks and add them to DB
     compute_gramian(start_block=start_block, block_size=block_size)
 
