@@ -31,6 +31,7 @@ from papers.models import Article, Feature, Profile, Recommendation
 from compute_feature_vectors import *
 
 min_number_of_ham = 4
+consider_inactive_after_days = 60
 
 
 def compute_recommendations(profile, articles, data, show_training_data=True, max_suggestions=500):
@@ -78,7 +79,8 @@ if __name__ == "__main__":
     logger.debug("Loading user profiles...")
     # get users which need updating
     qres = Article.objects.all().aggregate(Max('date_added'))
-    profiles = Profile.objects.filter( Q(last_prediction_run__lte=F('last_traindata_update')) | Q(last_prediction_run__lte=qres['date_added__max']) )
+    min_last_time_active = timezone.now() - datetime.timedelta(consider_inactive_after_days)
+    profiles = Profile.objects.filter( Q(last_time_active__lte=min_last_time_active) | Q(last_prediction_run__lte=F('last_traindata_update')) | Q(last_prediction_run__lte=qres['date_added__max']) )
     # profiles = Profile.objects.all()
     
     if profiles:
