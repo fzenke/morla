@@ -32,7 +32,7 @@ def get_features(data):
     return features
 
 def add_features_to_db(articles, features, stride = 200):
-    for k in tqdm(xrange(len(articles)/stride+1)):
+    for k in tqdm(range(len(articles)/stride+1)):
         start = k*stride
         end   = min((k+1)*stride,features.shape[0])
         A = scipy.sparse.coo_matrix(features[start:end])

@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 from sklearn.svm import LinearSVC
 import gzip
-import cPickle as pickle
+import pickle
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.decomposition import TruncatedSVD
 from sklearn.pipeline import make_pipeline
@@ -64,12 +64,12 @@ def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
         lb = maxblock
 
     print("Computing Gramian for %i articles in blocks of %i..."%(nb_articles, block_size))
-    blocks = [ [None for i in xrange(lb)] for j in xrange(lb) ]
-    for i in tqdm(xrange(lb)):
+    blocks = [ [None for i in range(lb)] for j in range(lb) ]
+    for i in tqdm(range(lb)):
         lower_row = int(i*bs)
         upper_row = int((i+1)*bs)
         if i==lb-1: upper_row=nb_articles
-        for j in xrange(i,lb):
+        for j in range(i,lb):
             if j<start_block: continue
             lower_col = int(j*bs)
             upper_col = int((j+1)*bs)
@@ -98,7 +98,7 @@ def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
 def add_similarities_to_db(articles, C, commit_count=5000):
     off = C.shape[0]-C.shape[1]
     transaction = []
-    for i in tqdm(xrange(len(articles))):
+    for i in tqdm(range(len(articles))):
         a = articles[i]
 
         # All all elements in row of similarity matrix

@@ -11,7 +11,7 @@ import papers.utils as utils
 
 from sklearn.svm import LinearSVC
 import gzip
-import cPickle as pickle
+import pickle
 import datetime
 
 import logging
