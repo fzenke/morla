@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Based on code by https://github.com/dfm
 # from https://github.com/dfm/arxiv-analysis/blob/master/arxiv/scrape.py

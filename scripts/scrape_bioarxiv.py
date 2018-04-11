@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Code based on work by http://predictablynoisy.com
 # from http://predictablynoisy.com/scrape-biorxiv.html
