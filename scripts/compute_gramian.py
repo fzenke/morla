@@ -59,7 +59,7 @@ def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
     nb_articles = articles.count()
     bs = block_size
     if maxblock is None:
-        lb = nb_articles/bs+1
+        lb = nb_articles//bs+1
     else:
         lb = maxblock
 

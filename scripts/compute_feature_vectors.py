@@ -31,9 +31,9 @@ def get_features(data):
     features = scipy.sparse.csr_matrix( utils.compute_features( data ) )
     return features
 
-def add_features_to_db(articles, features, stride = 200):
-    for k in tqdm(range(len(articles)/stride+1)):
-        start = k*stride
+def add_features_to_db(articles, features, stride=200):
+    for k in tqdm(range(len(articles)//stride+1)):
+        start = int(k*stride)
         end   = min((k+1)*stride,features.shape[0])
         A = scipy.sparse.coo_matrix(features[start:end])
         Feature.objects.bulk_create( [ Feature( article=articles[int(i+k*stride)], index=int(j), value=float(v)) for i,j,v in zip(A.row, A.col, A.data) ] )
