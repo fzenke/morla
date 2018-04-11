@@ -16,7 +16,8 @@ from django.db.models import Q
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
-from pylatexenc.latex2text import latex2text 
+from bibtexparser.customization import convert_to_unicode
+# from pylatexenc.latex2text import latex2text 
 from datetime import datetime
 
 
@@ -111,7 +112,8 @@ def filter_using_re(unicode_string):
 
 def prepare_string(x, max_length=None):
     """ Converts a string from LaTeX escapes to UTF8 and truncates it to max_length """
-    data = latex2text(x, tolerant_parsing=True)
+    # data = latex2text(x, tolerant_parsing=True)
+    data = x
     if max_length is not None:
         data = (data[:max_length-5] + '[...]') if len(data) > max_length else data
     return smart_text(filter_using_re(data))
@@ -137,6 +139,7 @@ def import_bibtex(bibtex_str, nb_max=None, update=True):
     """ Reads a bibtex string and returns a list of Article instances """ 
 
     parser = BibTexParser(ignore_nonstandard_types=False, homogenize_fields=False, common_strings=True)
+    parser.customization = convert_to_unicode
     bib_database = bibtexparser.loads(bibtex_str, parser)
  
     logger.info("Entries read from BibTeX data %i"%len(bib_database.entries))
@@ -144,7 +147,9 @@ def import_bibtex(bibtex_str, nb_max=None, update=True):
     # packaging into django objects
     data = []
     for e in bib_database.entries:
+        print(e['title'])
         title = key2str('title',e, 250)
+        print(title)
         authors  = key2str('author',e,500)
         journal  = key2str('journal',e,250)
         abstract = key2str('abstract',e)
