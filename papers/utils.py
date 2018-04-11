@@ -17,6 +17,7 @@ from django.db.models import Q
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import convert_to_unicode
+from bibtexparser.latexenc import latex_to_unicode
 # from pylatexenc.latex2text import latex2text 
 from datetime import datetime
 
@@ -41,7 +42,7 @@ def get_recommended_articles(request):
         articles = Article.objects.filter(suggested__isnull=False).distinct().order_by('-pubdate')
     return articles
 
-def get_similar_articles(article, limit=13):
+def get_similar_articles(article, limit=11):
     # similarities = Similarity.objects.filter( a=article ).order_by('-value')[:limit]
     similarities = Similarity.objects.filter( Q(a=article) | Q(b=article) ).order_by('-value')[:limit]
     articles = []
@@ -113,7 +114,7 @@ def filter_using_re(unicode_string):
 def prepare_string(x, max_length=None):
     """ Converts a string from LaTeX escapes to UTF8 and truncates it to max_length """
     # data = latex2text(x, tolerant_parsing=True)
-    data = x
+    data = latex_to_unicode(x)
     if max_length is not None:
         data = (data[:max_length-5] + '[...]') if len(data) > max_length else data
     return smart_text(filter_using_re(data))
