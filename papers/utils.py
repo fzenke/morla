@@ -15,6 +15,7 @@ from django.utils.encoding import smart_text
 from django.db.models import Q
 
 import bibtexparser
+from bibtexparser.bparser import BibTexParser
 from pylatexenc.latex2text import latex2text 
 from datetime import datetime
 
@@ -27,6 +28,7 @@ from django.contrib.auth.models import User
 
 feature_dims = { 'title' : 2**20,  'authors' : 2**16,  'abstract' : 2**20, 'keywords' : 2**16 }
 feature_weights = { 'title' : 1.0,  'authors' : 1.0,  'abstract' : 1.0, 'keywords' : 1.0 }
+
 
 
 def get_recommended_articles(request):
@@ -134,7 +136,9 @@ def key2int(key, dic):
 def import_bibtex(bibtex_str, nb_max=None, update=True):
     """ Reads a bibtex string and returns a list of Article instances """ 
 
-    bib_database = bibtexparser.loads(bibtex_str)
+    parser = BibTexParser(ignore_nonstandard_types=False, homogenize_fields=False, common_strings=True)
+    bib_database = bibtexparser.loads(bibtex_str, parser)
+ 
     logger.info("Entries read from BibTeX data %i"%len(bib_database.entries))
 
     # packaging into django objects
@@ -275,17 +279,17 @@ def get_or_create(title, authors, pubdate, journal, abstract, url=None, doi=None
 
 def get_training_set( profile, padrandom=True ):
     articles = list( profile.ham.all() )
-    labels = [ 1 for i in xrange(len(articles)) ]
+    labels = [ 1 for i in range(len(articles)) ]
     spam = profile.spam.all()
     articles.extend( spam )
-    labels.extend( [ -1 for i in xrange(len(spam)) ] ) 
+    labels.extend( [ -1 for i in range(len(spam)) ] ) 
 
     nb_pad = profile.ham.all().count() - profile.spam.all().count()
     if padrandom and nb_pad>0: 
         logger.debug("Using %i random patterns to augment spam set"%nb_pad)
         pad = Article.objects.exclude(ham=profile).order_by('?')[:nb_pad] 
         articles.extend( pad )
-        labels.extend( [ -1 for i in xrange(len(pad)) ] ) 
+        labels.extend( [ -1 for i in range(len(pad)) ] ) 
 
     data = get_features_from_db( articles )
     return data, np.array(labels)
