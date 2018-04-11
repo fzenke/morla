@@ -147,9 +147,7 @@ def import_bibtex(bibtex_str, nb_max=None, update=True):
     # packaging into django objects
     data = []
     for e in bib_database.entries:
-        print(e['title'])
         title = key2str('title',e, 250)
-        print(title)
         authors  = key2str('author',e,500)
         journal  = key2str('journal',e,250)
         abstract = key2str('abstract',e)
