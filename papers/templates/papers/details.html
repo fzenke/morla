@@ -15,7 +15,7 @@
 ({{ article.pubdate }}) <br />
 </p>
 
-<p> <a href="{{ article.url }}">Full text</a> 
+<p> <a href="{{ article.url }}">full text</a> 
 {% if article.doi %}
 | doi: <a href="https://doi.org/{{ article.doi }}">{{ article.doi }}</a>
 {% endif %}
@@ -32,12 +32,13 @@
 
 {% if in_training_set %}
 <p>
-This article is currently in your training data as <strong>{{in_training_set}}</strong>.
+<small>This article is currently in your training data as <strong>{{in_training_set}}</strong>.</small>
 </p>
 {% endif %}
 
 
 {% if user.is_authenticated %}
+<br />
 <p>
 	<button id="star_button{{article.id}}" name="btnSubmitStar" data-artid="{{article.id}}" class="btn btn-primary btn-sm" type="button">
 	{% if article.starred.all %}
