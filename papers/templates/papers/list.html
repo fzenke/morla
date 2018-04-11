@@ -13,7 +13,7 @@
     {% for article in articles_list %}
 		<tr> 
 			<td>
-			<strong>{{ article.title }}</strong> <br />
+				<strong><a href="/papers/{{ article.id }}/" style="text-decoration: none; color : #0A0A0A;">{{ article.title }}</a></strong> <br />
 			{{ article.authors }} <br />
 
 			{% if user.is_authenticated %}
