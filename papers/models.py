@@ -53,7 +53,7 @@ class Profile(models.Model):
     ham  = models.ManyToManyField(Article, related_name='ham')
     starred  = models.ManyToManyField(Article, related_name='starred')
     suggested = models.ManyToManyField(Article, related_name='suggested', through='Recommendation')
-    last_time_active = models.DateTimeField( )
+    last_time_active = models.DateTimeField( auto_now=True )
     last_traindata_update = models.DateTimeField( )
     last_prediction_run = models.DateTimeField( )
 

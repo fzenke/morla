@@ -31,7 +31,7 @@ feature_weights = { 'title' : 1.0,  'authors' : 1.0,  'abstract' : 1.0, 'keyword
 
 def get_recommended_articles(request):
     articles = []
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile,_ = Profile.objects.get_or_create(user=request.user, defaults={'last_prediction_run': timezone.now(), 'last_traindata_update': timezone.now()})
         articles = profile.suggested.all().order_by('-pubdate')
     else: # Get suggested articles from all users
@@ -57,7 +57,7 @@ def set_label(request, article_id, label=0):
         article_id the article id
         label the label which is either 1 for ham, -1 for spam or 0 which removes the label
     """
-    if not request.user.is_authenticated(): return False
+    if not request.user.is_authenticated: return False
 
     profile,_ = Profile.objects.get_or_create(user=request.user, defaults={'last_prediction_run': timezone.now(), 'last_traindata_update': timezone.now()})
     article = Article.objects.get(id=article_id)
@@ -89,7 +89,7 @@ def toggle_star(request, article_id):
     returns True if successful otherwise False
 
     """
-    if not request.user.is_authenticated(): return 0
+    if not request.user.is_authenticated: return 0
 
     profile,_ = Profile.objects.get_or_create(user=request.user, defaults={'last_prediction_run': timezone.now(), 'last_traindata_update': timezone.now()})
     article = Article.objects.get(id=int(article_id))

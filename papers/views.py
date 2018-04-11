@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.http import JsonResponse, HttpResponseRedirect
 
-import utils 
+from . import utils 
 
 from papers.models import Article, Profile, Feature, Recommendation, Similarity
 
@@ -22,7 +22,7 @@ def detail(request, article_id):
     article = Article.objects.get(id=article_id)
 
     in_training_set = ""
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile,_ = Profile.objects.get_or_create(user=request.user)
         if profile.ham.filter(id=article_id).exists():
             in_training_set = "ham"
@@ -82,14 +82,14 @@ def random(request):
 
 @login_required
 def starred(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile,_ = Profile.objects.get_or_create(user=request.user)
         starred_articles = profile.starred.all().order_by('-date_added')
     return list(request, starred_articles, title="Starred")
 
 @login_required
 def ham(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile,_ = Profile.objects.get_or_create(user=request.user)
         articles = profile.ham.all().order_by('-date_added')
     else:
@@ -100,7 +100,7 @@ def ham(request):
 def upload_ham_bib_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid() and request.user.is_authenticated():
+        if form.is_valid() and request.user.is_authenticated:
             articles = utils.import_bibtex(request.FILES['file'].read(), nb_max=200, update=True) # FIXME should be set to False at some point
             profile,_ = Profile.objects.get_or_create(user=request.user)
             utils.add_to_training_set( profile, articles, +1 )
@@ -113,7 +113,7 @@ def upload_ham_bib_file(request):
 
 @login_required
 def spam(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile,_ = Profile.objects.get_or_create(user=request.user)
         articles = profile.spam.all().order_by('-date_added')
     else:
