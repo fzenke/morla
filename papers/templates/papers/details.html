@@ -72,7 +72,7 @@ This article is currently in your training data as <strong>{{in_training_set}}</
     {% for article in similar_articles %}
 		<tr> 
 			<td>
-			<strong>{{ article.title }}</strong> <br />
+				<strong><a href="/papers/{{ article.id }}/" style="text-decoration: none; color : #0A0A0A;">{{ article.title }}</a></strong> <br />
 			{{ article.authors }} <br />
 
 			<small> 
