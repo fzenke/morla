@@ -29,7 +29,6 @@ from django.contrib.auth.models import User
 
 
 feature_dims = { 'title' : 2**20,  'authors' : 2**16,  'abstract' : 2**20, 'keywords' : 2**16 }
-feature_weights = { 'title' : 1.0,  'authors' : 1.0,  'abstract' : 1.0, 'keywords' : 1.0 }
 
 
 
@@ -114,10 +113,15 @@ def filter_using_re(unicode_string):
 def prepare_string(x, max_length=None):
     """ Converts a string from LaTeX escapes to UTF8 and truncates it to max_length """
     # data = latex2text(x, tolerant_parsing=True)
-    data = latex_to_unicode(x)
-    if max_length is not None:
-        data = (data[:max_length-5] + '[...]') if len(data) > max_length else data
-    return smart_text(filter_using_re(data))
+    try:
+        data = latex_to_unicode(filter_using_re(x))
+        if max_length is not None:
+            data = (data[:max_length-5] + '[...]') if len(data) > max_length else data
+        return smart_text(data)
+    except TypeError:
+        logger.warning("Encountered a TypeError which may be linked to unicode handling "
+                "in bibtexparser when processing the following string: %s."%x)
+    return ""
 
 def key2str(key, dic, max_length=None):
     """ Gets entry from dict and returns an empty string if the key does not exist. """
@@ -139,7 +143,7 @@ def key2int(key, dic):
 def import_bibtex(bibtex_str, nb_max=None, update=True):
     """ Reads a bibtex string and returns a list of Article instances """ 
 
-    parser = BibTexParser(ignore_nonstandard_types=False, homogenize_fields=False, common_strings=True)
+    parser = BibTexParser(ignore_nonstandard_types=False, homogenize_fields=True, common_strings=True)
     parser.customization = convert_to_unicode
     bib_database = bibtexparser.loads(bibtex_str, parser)
  
@@ -184,7 +188,7 @@ def compute_features( data ):
     """ Converts a list of tuples with title, authors, abstract, keywords to sparse tokenized feature vectors. """
     titles, authors, abstracts, keywords = zip(*data)
 
-    shared_params = dict(stop_words='english', strip_accents=None, non_negative=True )
+    shared_params = dict(stop_words='english', strip_accents=None, non_negative=True, analyzer="word", ngram_range=(1,2) )
     title_vectorizer    = HashingVectorizer( n_features=feature_dims['title'], **shared_params )
     authors_vectorizer  = HashingVectorizer( n_features=feature_dims['authors'], **shared_params )
     # journal_vectorizer  = HashingVectorizer( n_features=feature_dims['journal'], **shared_params )
@@ -196,12 +200,6 @@ def compute_features( data ):
     # journal_vecs = journal_vectorizer.transform(journals)
     abstract_vecs = abstract_vectorizer.transform(abstracts)
     keyword_vecs = keywords_vectorizer.transform(keywords)
-
-    # Compute feature weights
-    title_vecs    = title_vecs.multiply(feature_weights['title'])
-    authors_vecs  = authors_vecs.multiply(feature_weights['authors'])
-    abstract_vecs = abstract_vecs.multiply(feature_weights['abstract'])
-    keyword_vecs = keyword_vecs.multiply(feature_weights['keywords'])
 
     feature_vectors = sparse.hstack((title_vecs, authors_vecs, abstract_vecs, keyword_vecs))
     return feature_vectors

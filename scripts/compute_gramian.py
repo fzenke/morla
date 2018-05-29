@@ -36,8 +36,10 @@ import papers.utils as utils
 from compute_feature_vectors import *
 
 
+feature_weights = { 'title' : 1.0,  'authors' : 0.5,  'abstract' : 1.0, 'keywords' : 1.0 }
 
-def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
+
+def compute_gramian(start_block=0, maxblock=None, cutoff=0.33, block_size=1000):
     """ Computes the gramian matrix from feature vectores stored in the databse
 
     The function computes the sparse Gramian from feature vectors stored in the database. 
@@ -63,6 +65,22 @@ def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
     else:
         lb = maxblock
 
+    # Building metric M
+    offset = 0
+    row  = []
+    data = []
+    for key in utils.feature_dims.keys():
+        print(key)
+        n = utils.feature_dims[key]
+        row.append(np.arange(offset,offset+n))
+        data.append(feature_weights[key]*np.ones(n))
+        offset += n
+    row = np.concatenate(row)
+    data = np.concatenate(data)
+    col = row # we want a diagonal matrix
+    M = scipy.sparse.coo_matrix((data, (row, col)))
+    M = scipy.sparse.csc_matrix(M) # convert to csr format
+
     print("Computing Gramian for %i articles in blocks of %i..."%(nb_articles, block_size))
     blocks = [ [None for i in range(lb)] for j in range(lb) ]
     for i in tqdm(range(lb)):
@@ -75,11 +93,11 @@ def compute_gramian(start_block=0, maxblock=None, cutoff=0.25, block_size=1000):
             upper_col = int((j+1)*bs)
             if j==lb-1: upper_col=nb_articles
             tmp = utils.get_features_from_db(Article.objects.all()[lower_row:upper_row])
-            A = scipy.sparse.csr_matrix(tmp)
+            A = scipy.sparse.csc_matrix(tmp)
             tmp = utils.get_features_from_db(Article.objects.all()[lower_col:upper_col])
-            B = scipy.sparse.csr_matrix(tmp)
+            # B = scipy.sparse.csr_matrix(tmp)
             B = scipy.sparse.csc_matrix(tmp.transpose())
-            C = A.dot(B)
+            C = A.dot(M.dot(B))
             if i==j:
                 C = sparse.tril(C,-1)
             C = C.multiply(C >= cutoff )
@@ -124,12 +142,12 @@ def compute_features():
         add_features_to_db(articles, features)
 
 
-def update_gramian(block_size=400):
+def update_gramian(block_size=1000):
     # Find first article without similarities 
     start_block = 0
     if Similarity.objects.all().count():
         qres = Similarity.objects.all().aggregate(Max('a'))
-        start_block = int(qres['a__max']/block_size)
+        start_block   = qres['a__max']//block_size
         print("Resuming at article_id=%i"%qres['a__max'])
     # Compute the remaining blocks and add them to DB
     compute_gramian(start_block=start_block, block_size=block_size)
@@ -146,5 +164,6 @@ if __name__ == "__main__":
 
     print("Updating full Gramian...")
     # Similarity.objects.all().delete()
-    update_gramian()
+    rebuild_full_gramian()
+    # update_gramian()
 
